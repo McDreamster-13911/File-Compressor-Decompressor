@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+        <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            VANTA.NET({
+                el: "#wrapper",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                color: 0x2263ca,
+                backgroundColor: 0xf0f25,
+                maxDistance: 22.00
+            });
+        });
+        </script>
+        <title>File Compressor</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Oswald:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <style type="text/css">
+            html, body {
+                height: 100%;
+                margin: 0;
+                font-family: 'Oswald', sans-serif;
+            }
+            #wrapper {
+                min-height: 100%;
+            }
+            .heading{
+                font-family: 'Kalam', cursive;
+                font-size: 18px;
+            }
+            .button-30 {
+              align-items: center;
+              appearance: none;
+              background-color: #FCFCFD;
+              border-radius: 4px;
+              border-width: 0;
+              box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+              box-sizing: border-box;
+              color: #36395A;
+              cursor: pointer;
+              display: inline-flex;
+              font-family: "JetBrains Mono",monospace;
+              font-weight: bold;
+              height: 48px;
+              justify-content: center;
+              line-height: 1;
+              list-style: none;
+              overflow: hidden;
+              padding-left: 16px;
+              padding-right: 16px;
+              position: relative;
+              text-align: left;
+              text-decoration: none;
+              transition: box-shadow .15s,transform .15s;
+              user-select: none;
+              -webkit-user-select: none;
+              touch-action: manipulation;
+              white-space: nowrap;
+              will-change: box-shadow,transform;
+              font-size: 18px;
+            }
+
+            .button-30:focus {
+              box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+            }
+
+            .button-30:hover {
+              box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+              transform: translateY(-2px);
+            }
+
+            .button-30:active {
+              box-shadow: #D6D6E7 0 3px 7px inset;
+              transform: translateY(2px);
+            }
+        </style>
+        <!--[if lte IE 6]>
+        <style type="text/css">
+            #container {
+                height: 100%;
+            }
+        </style>
+        <![endif]-->
+    </head>
+
+    <body style="background-color: black; align-items: center; margin-top:-30px;">
+        <div style="color: white; text-align:center;" id="wrapper">
+            <h1 style="font-size: 44px; font-weight:700; padding-top: 120px;">LOSSLESS FILE COMPRESSION</h1>
+            <p class="heading" style="margin-top:-10px;" >using</p>
+            <h1 style="color:#2263ca; font-weight:700; font-size: 64px; margin-top:-10px;"><i>HUFFMAN CODING</i></h1>
+            <a href="/compress"><button class="button-30" role="button">COMPRESS</button></a>&#160;&#160;&#160;&#160;&#160;
+            <a href="/decompress"><button class="button-30" role="button">DECOMPRESS</button></button></a>
+        </div>
+    </body>
+</html>
+
+
