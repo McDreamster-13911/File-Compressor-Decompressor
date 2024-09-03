@@ -2,11 +2,12 @@ from flask import Flask, render_template, request, send_file
 from compression_stuff import Tree
 from decompress_stuff import build_huffman_tree, decode, decompress_binary_file
 from tempfile import NamedTemporaryFile
+import os
 
 app = Flask(__name__)
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'txt', 'pdf', 'doc', 'docx'}  # Add allowed file extensions
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'txt', 'pdf', 'doc', 'docx'}
 
 @app.route('/')
 def home():
@@ -24,22 +25,16 @@ def compress():
             return render_template('compress.html', error_message='No file selected.')
 
         if file and allowed_file(file.filename):
-            # Get the content of the uploaded file
             file_content = file.read()
-
-            # Process the file content using the Tree class
             tree = Tree()
-            encoded_text = tree.encode(file_content)
+            encoded_text = tree.encode(file_content.decode('utf-8'))
 
-            # Create a temporary file in memory without saving it
             with open('compressed.bin', 'wb') as temp_file:
                 encoded_text.tofile(temp_file)
 
-            # Return the compressed file to the user for download
             return send_file('compressed.bin', as_attachment=True, download_name='compressed.bin', mimetype='application/octet-stream')
 
     return render_template('compress.html')
-
 
 @app.route('/decompress', methods=['GET', 'POST'])
 def decompress():
@@ -54,20 +49,19 @@ def decompress():
 
         file_content = file.read()
 
-        # Save the uploaded compressed file content to a temporary file
         with NamedTemporaryFile(delete=False) as temp_file:
             temp_file.write(file_content)
+            temp_file_path = temp_file.name
 
-        # Build Huffman tree from the compressed file content
-        tree_root = build_huffman_tree(file_content)
+        try:
+            tree_root = build_huffman_tree(file_content)
+            decompressed_file_path = 'decompressed.txt'
+            decompress_binary_file(temp_file_path, decompressed_file_path, tree_root)
 
-        # Decompress the uploaded file
-        decompressed_file_path = 'decompressed.txt'
-        decompress_binary_file(temp_file.name, decompressed_file_path, tree_root)
-
-        # Return the decompressed file to the user for download
-        return send_file(decompressed_file_path, as_attachment=True, download_name='decompressed.txt', mimetype='text/plain', cache_timeout=0)
+            # Return the decompressed file to the user for download
+            return send_file(decompressed_file_path, as_attachment=True, download_name='decompressed.txt', mimetype='text/plain')
+        finally:
+            os.remove(temp_file_path)
 
     return render_template('decompress.html')
-
 
