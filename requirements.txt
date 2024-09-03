@@ -1,0 +1,2 @@
+Flask==2.6.3
+bitarray==2.8.2
