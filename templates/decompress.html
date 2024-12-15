@@ -101,7 +101,13 @@
             <input type="file" name="file" id="file" style="font-size: 16px; width: 170px; height: 25px; margin: 10px auto; background: white; color: #a0a0a0; display: block;">
             <button style="margin-top: 30px;" class="button-30" type="submit">Upload</button><br>
         </form>
+        {% if check == 1 %}
+            <p>File decompressed successfully!</p>
+            <p>Decompressed file size: {{ decompressed_size }} bytes</p>
+            <a href="{{ url_for('download', filename=filename) }}" class="button-30" style="margin-top:20px; text-decoration:none; color:black;">DOWNLOAD DECOMPRESSED FILE</a>
+        {% endif %}
     </div>
 
 </body>
 </html>
+

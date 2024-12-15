@@ -106,7 +106,9 @@
 
         <!-- Display the download button if compression is successful -->
         {% if check == 1 %}
-            <a href="{{ url_for('download', filename='compressed.bin') }}" class="button-30" style="margin-top:20px; text-decoration:none; color:black;">DOWNLOAD</a>
+            <p>File compressed successfully!</p>
+            <p>Compression ratio: {{ "%.2f"|format(compression_ratio) }}%</p>
+            <a href="{{ url_for('download', filename=filename) }}" class="button-30" style="margin-top:20px; text-decoration:none; color:black;">DOWNLOAD COMPRESSED FILE</a>
         {% endif %}
 
         <div class="col-2" style="flex: 1;">
@@ -155,3 +157,4 @@
 
 </body>
 </html>
+

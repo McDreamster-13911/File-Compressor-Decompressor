@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, send_file
-from compression_stuff import Tree
-from decompress_stuff import build_huffman_tree, decode, decompress_binary_file
-from tempfile import NamedTemporaryFile
 import os
+from werkzeug.utils import secure_filename
+from compression_stuff import compress_file
+from decompress_stuff import decompress_file
 
 app = Flask(__name__)
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'txt', 'pdf', 'doc', 'docx'}
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['COMPRESSED_FOLDER'] = 'compressed/'
+app.config['DECOMPRESSED_FOLDER'] = 'decompressed/'
 
 @app.route('/')
 def home():
@@ -16,52 +16,49 @@ def home():
 @app.route('/compress', methods=['GET', 'POST'])
 def compress():
     if request.method == 'POST':
-        if 'file' not in request.files:
-            return render_template('compress.html', error_message='No file selected.')
-
         file = request.files['file']
-
-        if file.filename == '':
-            return render_template('compress.html', error_message='No file selected.')
-
-        if file and allowed_file(file.filename):
-            file_content = file.read()
-            tree = Tree()
-            encoded_text = tree.encode(file_content.decode('utf-8'))
-
-            with open('compressed.bin', 'wb') as temp_file:
-                encoded_text.tofile(temp_file)
-
-            return send_file('compressed.bin', as_attachment=True, download_name='compressed.bin', mimetype='application/octet-stream')
-
-    return render_template('compress.html')
+        if file and file.filename.endswith('.txt'):
+            filename = secure_filename(file.filename)
+            input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(input_path)
+            
+            output_filename = f"compressed_{filename}.bin"
+            output_path = os.path.join(app.config['COMPRESSED_FOLDER'], output_filename)
+            
+            compression_ratio = compress_file(input_path, output_path)
+            
+            return render_template('compress.html', check=1, compression_ratio=compression_ratio, filename=output_filename)
+    
+    return render_template('compress.html', check=0)
 
 @app.route('/decompress', methods=['GET', 'POST'])
 def decompress():
     if request.method == 'POST':
-        if 'file' not in request.files:
-            return render_template('decompress.html', error_message='No file selected.')
-
         file = request.files['file']
+        if file and file.filename.endswith('.bin'):
+            filename = secure_filename(file.filename)
+            input_path = os.path.join(app.config['COMPRESSED_FOLDER'], filename)
+            file.save(input_path)
+            
+            output_filename = f"decompressed_{filename[11:-4]}.txt"
+            output_path = os.path.join(app.config['DECOMPRESSED_FOLDER'], output_filename)
+            
+            decompressed_size = decompress_file(input_path, output_path)
+            
+            return render_template('decompress.html', check=1, decompressed_size=decompressed_size, filename=output_filename)
+    
+    return render_template('decompress.html', check=0)
 
-        if file.filename == '':
-            return render_template('decompress.html', error_message='No file selected.')
+@app.route('/download/<filename>')
+def download(filename):
+    if filename.startswith('compressed_'):
+        return send_file(os.path.join(app.config['COMPRESSED_FOLDER'], filename), as_attachment=True)
+    elif filename.startswith('decompressed_'):
+        return send_file(os.path.join(app.config['DECOMPRESSED_FOLDER'], filename), as_attachment=True)
 
-        file_content = file.read()
-
-        with NamedTemporaryFile(delete=False) as temp_file:
-            temp_file.write(file_content)
-            temp_file_path = temp_file.name
-
-        try:
-            tree_root = build_huffman_tree(file_content)
-            decompressed_file_path = 'decompressed.txt'
-            decompress_binary_file(temp_file_path, decompressed_file_path, tree_root)
-
-            # Return the decompressed file to the user for download
-            return send_file(decompressed_file_path, as_attachment=True, download_name='decompressed.txt', mimetype='text/plain')
-        finally:
-            os.remove(temp_file_path)
-
-    return render_template('decompress.html')
+if __name__ == '__main__':
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['COMPRESSED_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['DECOMPRESSED_FOLDER'], exist_ok=True)
+    app.run(debug=True)
 
